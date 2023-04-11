@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#(c) Dev. Gautam Kumar
+PATH=/bin:/usr/bin:
+clear
+#colors
+NONE='\033[00m'
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+BOLD='\033[1m'
+UNDERLINE='\033[4m'
+# intro
+$(cat banner.txt)
+echo -e "**** ${BOLD}Developer${NONE}: ${UNDERLINE}${CYAN}Dev. Gautam Kumar${NONE} ***"
+if [ "$(adb devices | grep -w device)" ];
+then
+    manu=$(adb shell getprop ro.product.manufacturer)
+    model=$(adb shell getprop ro.product.model)
+    version=$(adb shell getprop ro.build.version.release )
+    sdk=$(adb shell getprop ro.build.version.sdk )
+    info=$(printf "%s %s %s (API %s)" "$manu" "$model" "$version" "$sdk")
+    echo $info
+    syn $1
+else
+    echo "Device is not attached"
+fi
+syn(){
+    adb backup -noapk -shared -f $2 $1
+    }
