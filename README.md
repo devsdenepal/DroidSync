@@ -12,7 +12,7 @@ DroidSync is a command-line tool that uses the Android Debug Bridge (ADB) to bac
 To install DroidSync, follow these steps:
 
 1. Install ADB on your computer.
-2. Download the latest release of DroidSync from the [GitHub releases page](https://github.com/example-user/droidsync/releases).
+2. Clone this repo
 3. Extract the downloaded archive to a directory of your choice.
 4. Add the DroidSync directory to your PATH environment variable.
 
