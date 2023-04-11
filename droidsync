@@ -32,11 +32,14 @@ echo -e "${RED}
  ${NONE}
 "
 echo -e "**** ${BOLD}Developer${NONE}: ${UNDERLINE}${CYAN}Dev. Gautam Kumar${NONE} ***${BLUE}"
+restore(){
+    echo $(adb restore $1)
+}
 syn(){
     adb backup -f $2 -noapk $1
-    }
-restore(){
-    adb restore $1
+    echo 'Waiting for  device to restore 15 sec'
+    sleep 15
+    restore $2
 }
 if [ "$(adb devices | grep -w device)" ];
 then
@@ -46,6 +49,7 @@ then
     sdk=$(adb shell getprop ro.build.version.sdk )
     info=$(printf "%s %s %s (API %s)" "$manu" "$model" "$version" "$sdk")
     echo $info
+    syn $1 $2
 else
     echo "Device is not attached"
 fi
