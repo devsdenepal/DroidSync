@@ -1,55 +1,50 @@
 #!/usr/bin/env bash
 #(c) Dev. Gautam Kumar
 PATH=/bin:/usr/bin:
-clear
-#colors
 NONE='\033[00m'
 RED='\033[01;31m'
-GREEN='\033[01;32m'
-YELLOW='\033[01;33m'
-BLUE='\033[01;35m'
 CYAN='\033[01;36m'
-WHITE='\033[01;37m'
 BOLD='\033[1m'
 UNDERLINE='\033[4m'
-# intro
-echo -e "${RED}
-||||||||||||||||||||||||||||||||||||||||||||||||||
-||||||||||||||||||||||||||||||||||||||||||||||||||
-|||||||||||||||||_||||||||||||||||_|||||||||||||||
-|||||||||||||||||__||||||||||||||_||||||||||||||||
-||||||||||||||||||_______________|||||||||||||||||
-||||||||||||||||___________________|||||||||||||||
-||||||||||||||____|||_________|||____|||||||||||||
-|||||||||||||_____|||_________|||_____||||||||||||
-||||||||||||___________________________|||||||||||
-||||||||||||___________________________|||||||||||
-||||||||||||||||||||||||||||||||||||||||||||||||||
-████████████████████████████████████████████████████████
-█▄─▄▄▀█▄─▄▄▀█─▄▄─█▄─▄█▄─▄▄▀███─▄▄▄▄█▄─█─▄█▄─▀█▄─▄█─▄▄▄─█
-██─██─██─▄─▄█─██─██─███─██─███▄▄▄▄─██▄─▄███─█▄▀─██─███▀█
-▀▄▄▄▄▀▀▄▄▀▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▄▀▀▀▀▄▄▄▄▄▀▀▄▄▄▀▀▄▄▄▀▀▄▄▀▄▄▄▄▄▀
- ${NONE}
-"
-echo -e "**** ${BOLD}Developer${NONE}: ${UNDERLINE}${CYAN}Dev. Gautam Kumar${NONE} ***${BLUE}"
-restore(){
-    echo $(adb restore $1)
+BLUE='\033[01;35m'
+
+show_usage() {
+    echo "Usage: $0 <package.name> <file_name>.ab"
+    echo "  Backs up the given app's data (APK excluded) then restores it to the attached device."
+    exit 1
 }
-syn(){
-    adb backup -f $2 -noapk $1
-    echo 'Waiting for  device to restore 15 sec'
+
+[ -z "$1" ] && show_usage
+[ -z "$2" ] && show_usage
+
+if ! command -v adb >/dev/null 2>&1; then
+    echo "ADB is not installed or not in PATH."
+    exit 1
+fi
+
+cat banner.txt | while read -r line; do echo -e "${RED}$line${NONE}"; done
+echo -e "${BLUE}**** ${BOLD}Developer${NONE}: ${UNDERLINE}${CYAN}Dev. Gautam Kumar${NONE} ***${BLUE}"
+
+restore() {
+    echo "$(adb restore "$1")"
+}
+
+syn() {
+    adb backup -f "$2" -noapk "$1"
+    echo 'Waiting for device to restore (15 sec)'
     sleep 15
-    restore $2
+    restore "$2"
 }
-if [ "$(adb devices | grep -w device)" ];
-then
+
+if [ "$(adb devices | grep -w device)" ]; then
     manu=$(adb shell getprop ro.product.manufacturer)
     model=$(adb shell getprop ro.product.model)
-    version=$(adb shell getprop ro.build.version.release )
-    sdk=$(adb shell getprop ro.build.version.sdk )
+    version=$(adb shell getprop ro.build.version.release)
+    sdk=$(adb shell getprop ro.build.version.sdk)
     info=$(printf "%s %s %s (API %s)" "$manu" "$model" "$version" "$sdk")
-    echo $info
-    syn $1 $2
+    echo "$info"
+    syn "$1" "$2"
 else
-    echo "Device is not attached"
+    echo "Device is not attached. Enable USB debugging and connect your phone."
+    exit 1
 fi
